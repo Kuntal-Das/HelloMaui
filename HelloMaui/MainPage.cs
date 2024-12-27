@@ -6,9 +6,12 @@ public class MainPage : BaseContentPage
 {
     public MainPage()
     {
+        BackgroundColor = Colors.DarkViolet;
         Title = "Hello Maui";
         Content = new VerticalStackLayout()
         {
+            BackgroundColor = Colors.LightSteelBlue,
+            Spacing = 12,
             Children =
             {
                 new Image()
@@ -20,9 +23,25 @@ public class MainPage : BaseContentPage
                     .TextColor(Colors.Black)
                     .Center()
                     .TextCenter(),
-                new Entry()
-                    .Placeholder("Notes", Colors.DarkGray)
-                    .TextColor(Colors.Black)
+                new HorizontalStackLayout()
+                {
+                    BackgroundColor = Colors.ForestGreen,
+                    Spacing = 12,
+                    Children =
+                    {
+                        new Entry()
+                            .Placeholder("First Entry", Colors.DarkGray)
+                            .TextColor(Colors.Black),
+                        
+                        new Entry()
+                            .Placeholder("Second Entry", Colors.DarkGray)
+                            .TextColor(Colors.Black),
+                        
+                        new Entry()
+                            .Placeholder("Third Entry", Colors.DarkGray)
+                            .TextColor(Colors.Black),
+                    },
+                }.Center(),
             }
         };
     }
