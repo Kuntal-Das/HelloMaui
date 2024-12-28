@@ -1,7 +1,9 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using CommunityToolkit.Maui;
 using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Markup;
+using Microsoft.Maui.Graphics.Text;
 
 namespace HelloMaui;
 
@@ -92,18 +94,20 @@ public class MainPage : BaseContentPage
     public MainPage()
     {
         Title = "Maui Collection View";
-        BackgroundColor = Colors.LightBlue;
+        // BackgroundColor = Colors.LightBlue;
+        this.AppThemeColorBinding(BackgroundColorProperty, Colors.LightBlue, Color.FromArgb("#3b4a4f"));
         Content = new RefreshView()
             {
                 Content = new CollectionView()
                 {
                     Header = new Label() { Text = "Dotnet Maui Libraries" }
-                        // .TextDecorations(TextDecorations.Underline)
+                        .AppThemeBinding(Label.TextColorProperty, Colors.Black, Colors.LightGray)
                         .Paddings(bottom: 8)
                         .Font(size: 32, bold: true)
                         .Center()
                         .TextCenter(),
                     Footer = new Label() { Text = "Dotnet Maui: zero to hero" }
+                        .AppThemeBinding(Label.TextColorProperty, Color.FromArgb("#474f52"), Colors.DarkGray)
                         .Paddings(left: 8)
                         .FontSize(10)
                         .Center()
@@ -118,19 +122,26 @@ public class MainPage : BaseContentPage
 
     private async void HandelRefreshing(object? sender, EventArgs e)
     {
-        ArgumentNullException.ThrowIfNull(sender);
-        var rv = (RefreshView)sender;
-        await Task.Delay(2000);
-
-        _mauiLibraries.Add(new()
+        try
         {
-            Title = "SharpNado.Tabs",
-            Description =
-                "Pure MAUI and Xamarin.Forms, including fixed tabs, scrollable tabs, bottom tabs, badge, segmented tabs etc.",
-            ImageSource = "https://api.nuget.org/v3-flatcontainer/sharpnado.tabs/3.0.0/icon"
-        });
+            ArgumentNullException.ThrowIfNull(sender);
+            var rv = (RefreshView)sender;
+            await Task.Delay(2000);
 
-        rv.IsRefreshing = false;
+            _mauiLibraries.Add(new()
+            {
+                Title = "SharpNado.Tabs",
+                Description =
+                    "Pure MAUI and Xamarin.Forms, including fixed tabs, scrollable tabs, bottom tabs, badge, segmented tabs etc.",
+                ImageSource = "https://api.nuget.org/v3-flatcontainer/sharpnado.tabs/3.0.0/icon"
+            });
+
+            rv.IsRefreshing = false;
+        }
+        catch (Exception ex)
+        {
+            await Toast.Make(ex.Message).Show();
+        }
     }
 
     private static async void SelectionChanged(object? sender, SelectionChangedEventArgs e)

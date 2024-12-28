@@ -25,8 +25,8 @@ public class MauiLibrariesDataTemplate() : DataTemplate(CreateGridTemplate)
     {
         RowSpacing = 12,
         RowDefinitions = Rows.Define(
-            (Row.Title, 22),
-            (Row.Description, 44),
+            (Row.Title, Auto),
+            (Row.Description, Auto),
             (Row.BottomPadding, 8)
         ),
 
@@ -44,11 +44,12 @@ public class MauiLibrariesDataTemplate() : DataTemplate(CreateGridTemplate)
                 .Bind(Image.SourceProperty, getter: (LibraryModel m) => m.ImageSource, mode: BindingMode.OneWay),
             new Label()
                 {
-                    VerticalTextAlignment = TextAlignment.Center
+                    VerticalTextAlignment = TextAlignment.Center,
+                    Style = AppStyles.GetResource<Style>("LargeFontlabel")
                 }
                 .Row(Row.Title).Column(Column.Text)
-                .Font(size: 18, bold: true)
-                .TextColor(Color.FromArgb("#262626"))
+                .Font(bold: true)
+                .AppThemeBinding(Label.TextColorProperty, Color.FromArgb("#262626"), Color.FromArgb("#c9c9c9"))
                 .Bind(Label.TextProperty, getter: (LibraryModel m) => m.Title, mode: BindingMode.OneWay),
             new Label()
                 {
@@ -58,7 +59,7 @@ public class MauiLibrariesDataTemplate() : DataTemplate(CreateGridTemplate)
                 }
                 .Row(Row.Description).Column(Column.Text)
                 .Font(size: 12)
-                .TextColor(Color.FromArgb("#595959"))
+                .AppThemeBinding(Label.TextColorProperty, Color.FromArgb("#595959"), Color.FromArgb("#b8b6b6"))
                 .Bind(Label.TextProperty, getter: (LibraryModel m) => m.Description, mode: BindingMode.OneWay)
         }
     }.Paddings(left: 12, right: 12);
