@@ -21,7 +21,7 @@ public class MauiLibrariesDataTemplate() : DataTemplate(CreateGridTemplate)
         BottomPadding
     }
 
-    static Grid CreateGridTemplate() => new()
+    static Grid CreateGridTemplate() => new Grid()
     {
         RowSpacing = 12,
         RowDefinitions = Rows.Define(
@@ -43,21 +43,23 @@ public class MauiLibrariesDataTemplate() : DataTemplate(CreateGridTemplate)
                 .Size(imageRadius * 2)
                 .Bind(Image.SourceProperty, getter: (LibraryModel m) => m.ImageSource, mode: BindingMode.OneWay),
             new Label()
+                {
+                    VerticalTextAlignment = TextAlignment.Center
+                }
                 .Row(Row.Title).Column(Column.Text)
                 .Font(size: 18, bold: true)
-                .TextTop()
-                .TextStart()
+                .TextColor(Color.FromArgb("#262626"))
                 .Bind(Label.TextProperty, getter: (LibraryModel m) => m.Title, mode: BindingMode.OneWay),
             new Label()
                 {
                     MaxLines = 2,
-                    LineBreakMode = LineBreakMode.WordWrap
+                    LineBreakMode = LineBreakMode.WordWrap,
+                    VerticalTextAlignment = TextAlignment.Center
                 }
                 .Row(Row.Description).Column(Column.Text)
                 .Font(size: 12)
-                .TextTop()
-                .TextStart()
+                .TextColor(Color.FromArgb("#595959"))
                 .Bind(Label.TextProperty, getter: (LibraryModel m) => m.Description, mode: BindingMode.OneWay)
         }
-    };
+    }.Paddings(left: 12, right: 12);
 }

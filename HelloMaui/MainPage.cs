@@ -91,15 +91,16 @@ public class MainPage : BaseContentPage
 
     public MainPage()
     {
-        // BackgroundColor = Colors.DarkViolet;
         Title = "Maui Collection View";
+        BackgroundColor = Colors.LightBlue;
         Content = new RefreshView()
             {
                 Content = new CollectionView()
                 {
                     Header = new Label() { Text = "Dotnet Maui Libraries" }
+                        // .TextDecorations(TextDecorations.Underline)
                         .Paddings(bottom: 8)
-                        .FontSize(32)
+                        .Font(size: 32, bold: true)
                         .Center()
                         .TextCenter(),
                     Footer = new Label() { Text = "Dotnet Maui: zero to hero" }
@@ -112,7 +113,7 @@ public class MainPage : BaseContentPage
                     ItemTemplate = new MauiLibrariesDataTemplate(),
                 }.Invoke(cv => cv.SelectionChanged += SelectionChanged),
             }.Invoke((rv => rv.Refreshing += HandelRefreshing))
-            .Margins(12, 24, 12, 0);
+            .Margins(top: 24);
     }
 
     private async void HandelRefreshing(object? sender, EventArgs e)
