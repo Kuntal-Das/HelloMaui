@@ -93,22 +93,43 @@ public class MainPage : BaseContentPage
     {
         // BackgroundColor = Colors.DarkViolet;
         Title = "Maui Collection View";
-        Content = new CollectionView()
+        Content = new RefreshView()
+            {
+                Content = new CollectionView()
+                {
+                    Header = new Label() { Text = "Dotnet Maui Libraries" }
+                        .Paddings(bottom: 8)
+                        .FontSize(32)
+                        .Center()
+                        .TextCenter(),
+                    Footer = new Label() { Text = "Dotnet Maui: zero to hero" }
+                        .Paddings(left: 8)
+                        .FontSize(10)
+                        .Center()
+                        .TextCenter(),
+                    SelectionMode = SelectionMode.Single,
+                    ItemsSource = _mauiLibraries,
+                    ItemTemplate = new MauiLibrariesDataTemplate(),
+                }.Invoke(cv => cv.SelectionChanged += SelectionChanged),
+            }.Invoke((rv => rv.Refreshing += HandelRefreshing))
+            .Margins(12, 24, 12, 0);
+    }
+
+    private async void HandelRefreshing(object? sender, EventArgs e)
+    {
+        ArgumentNullException.ThrowIfNull(sender);
+        var rv = (RefreshView)sender;
+        await Task.Delay(2000);
+
+        _mauiLibraries.Add(new()
         {
-            Header = new Label() { Text = "Dotnet Maui Libraries" }
-                .Paddings(bottom: 8)
-                .FontSize(32)
-                .Center()
-                .TextCenter(),
-            Footer = new Label() { Text = "Dotnet Maui: zero to hero" }
-                .Paddings(left: 8)
-                .FontSize(10)
-                .Center()
-                .TextCenter(),
-            SelectionMode = SelectionMode.Single,
-            ItemsSource = _mauiLibraries,
-            ItemTemplate = new MauiLibrariesDataTemplate(),
-        }.Invoke(cv => cv.SelectionChanged += SelectionChanged);
+            Title = "SharpNado.Tabs",
+            Description =
+                "Pure MAUI and Xamarin.Forms, including fixed tabs, scrollable tabs, bottom tabs, badge, segmented tabs etc.",
+            ImageSource = "https://api.nuget.org/v3-flatcontainer/sharpnado.tabs/3.0.0/icon"
+        });
+
+        rv.IsRefreshing = false;
     }
 
     private static async void SelectionChanged(object? sender, SelectionChangedEventArgs e)
