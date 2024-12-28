@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Behaviors;
 using CommunityToolkit.Maui.Markup;
+using CommunityToolkit.Maui.Views;
 
 namespace HelloMaui;
 
@@ -19,6 +20,28 @@ public class MainPage : BaseContentPage
         Label,
         Entry,
         LargeTextLabel
+    }
+
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+
+        this.ShowPopup(new WelcomePopUp());
+    }
+
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+    }
+
+    protected override void OnNavigatedTo(NavigatedToEventArgs args)
+    {
+        base.OnNavigatedTo(args);
+    }
+
+    protected override void OnNavigatedFrom(NavigatedFromEventArgs args)
+    {
+        base.OnNavigatedFrom(args);
     }
 
     internal enum Column
@@ -210,5 +233,17 @@ public class MainPage : BaseContentPage
         {
             await Toast.Make(ex.Message).Show();
         }
+    }
+}
+
+internal class WelcomePopUp : Popup
+{
+    public WelcomePopUp()
+    {
+        Content = new Label()
+            .Text("WELCOME TO MAUI!")
+            .Font(size: 42, bold: true)
+            .Center()
+            .TextCenter();
     }
 }
