@@ -25,7 +25,6 @@ public class MainPage : BaseContentPage
     protected override void OnAppearing()
     {
         base.OnAppearing();
-
         this.ShowPopup(new WelcomePopUp());
     }
 
@@ -129,6 +128,7 @@ public class MainPage : BaseContentPage
                     Header = new SearchBar()
                         .Placeholder("Search Titles")
                         .AppThemeBinding(Label.TextColorProperty, Colors.Black, Colors.LightGray)
+                        .Margins(bottom: 8)
                         .Center()
                         .TextCenter()
                         .Behaviors(new UserStoppedTypingBehavior()
@@ -224,10 +224,14 @@ public class MainPage : BaseContentPage
             ArgumentNullException.ThrowIfNull(sender);
 
             if (e.CurrentSelection.FirstOrDefault() is not LibraryModel lm) return;
-            await Toast.Make($"{lm.Title} Tapped").Show();
-            await Task.Delay(500);
-            if (sender is CollectionView collectionView)
-                collectionView.SelectedItem = null;
+            await Shell.Current.GoToAsync(AppShell.GetRoute<DetailsPage>(), new Dictionary<string, object>()
+            {
+                { nameof(LibraryModel), lm }
+            });
+            // await Toast.Make($"{lm.Title} Tapped").Show();
+            // await Task.Delay(500);
+            // if (sender is CollectionView collectionView)
+            // collectionView.SelectedItem = null;
         }
         catch (Exception ex)
         {
@@ -236,7 +240,7 @@ public class MainPage : BaseContentPage
     }
 }
 
-internal class WelcomePopUp : Popup
+internal sealed class WelcomePopUp : Popup
 {
     public WelcomePopUp()
     {
