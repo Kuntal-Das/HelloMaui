@@ -1,5 +1,7 @@
 ﻿using CommunityToolkit.Maui;
 using CommunityToolkit.Maui.Markup;
+using HelloMaui.Pages;
+using HelloMaui.ViewModels;
 using Microsoft.Extensions.Logging;
 
 namespace HelloMaui;
@@ -25,8 +27,12 @@ public static class MauiProgram
         
         builder.Services.AddSingleton<AppShell>();
         builder.Services.AddSingleton<App>();
+        
         builder.Services.AddTransient<MainPage>();
         builder.Services.AddTransient<DetailsPage>();
+        
+        builder.Services.AddTransient<MainViewModel>();
+        builder.Services.AddTransient<DetailsViewModel>();
 
         return builder.Build();
     }

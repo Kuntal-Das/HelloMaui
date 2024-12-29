@@ -1,7 +1,8 @@
 using CommunityToolkit.Maui.Markup;
+using HelloMaui.Models;
 using static CommunityToolkit.Maui.Markup.GridRowsColumns;
 
-namespace HelloMaui;
+namespace HelloMaui.Views;
 
 public class MauiLibrariesDataTemplate() : DataTemplate(CreateGridTemplate)
 {

@@ -1,14 +1,16 @@
+using HelloMaui.Pages;
+
 namespace HelloMaui;
 
 public class AppShell : Shell
 {
-    public AppShell()
+    public AppShell(MainPage mainPage)
     {
-        Items.Add(new MainPage());
+        Items.Add(mainPage);
         CreateRoutes();
     }
 
-    public static string GetRoute<T>() where T : BaseContentPage
+    public static string GetRoute<T>() where T : ContentPage
     {
         if (typeof(T) == typeof(DetailsPage))
         {

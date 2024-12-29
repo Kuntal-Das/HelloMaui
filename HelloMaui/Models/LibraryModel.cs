@@ -1,6 +1,6 @@
 using System.Threading.Channels;
 
-namespace HelloMaui;
+namespace HelloMaui.Models;
 
 public class LibraryModel
 {
