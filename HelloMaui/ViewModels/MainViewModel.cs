@@ -1,23 +1,20 @@
 using System.Collections.ObjectModel;
-using System.Windows.Input;
 using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using HelloMaui.Models;
 using HelloMaui.Pages;
 
 namespace HelloMaui.ViewModels;
 
-public class MainViewModel : BaseViewModel
+public partial class MainViewModel : ObservableObject
 {
-    public MainViewModel()
+    public MainViewModel(IDispatcher messageBus)
     {
-        SearchText = "";
-        _isSearchBarEnabled = true;
+        _messageBus = messageBus;
         MauiLibraries = new(GetAllLibraries());
-        UserStoppedTypingCommand = new RelayCommand(UserStoppedTyping);
-        SearchBarDoubleTappedCommand = new AsyncRelayCommand(SearchBarDoubleTapped);
-        SelectionChangedCommand = new AsyncRelayCommand(SelectionChanged);
-        RefreshCommand = new AsyncRelayCommand(HandelRefreshing);
+        SearchText = "";
+        IsSearchBarEnabled = true;
     }
 
     private static IEnumerable<LibraryModel> GetAllLibraries()
@@ -87,50 +84,22 @@ public class MainViewModel : BaseViewModel
         };
     }
 
-    private string? _searchText;
-    private bool _isSearchBarEnabled;
-    private bool _isRefreshing;
-    private object _selectedLibraryItem;
-
-    // public ObservableCollection<object> SelectedLibraries { get; }
+    [ObservableProperty] private string? _searchText;
+    [ObservableProperty] private bool _isSearchBarEnabled;
+    [ObservableProperty] private bool _isRefreshing;
+    [ObservableProperty] private object _selectedLibraryItem;
+    private readonly IDispatcher _messageBus;
     public ObservableCollection<LibraryModel> MauiLibraries { get; }
-    public ICommand UserStoppedTypingCommand { get; }
-    public ICommand SearchBarDoubleTappedCommand { get; }
-    public ICommand SelectionChangedCommand { get; set; }
-    public ICommand RefreshCommand { get; set; }
 
-    public string? SearchText
-    {
-        get => _searchText;
-        set => SetProperty(ref _searchText, value);
-    }
-
-    public bool IsSearchBarEnabled
-    {
-        get => _isSearchBarEnabled;
-        set => SetProperty(ref _isSearchBarEnabled, value);
-    }
-
-    public bool IsRefreshing
-    {
-        get => _isRefreshing;
-        set => SetProperty(ref _isRefreshing, value);
-    }
-
-    public object SelectedLibraryItem
-    {
-        get => _selectedLibraryItem;
-        set => SetProperty(ref _selectedLibraryItem, value);
-    }
-
-    private void UserStoppedTyping()
+    [RelayCommand]
+    private async Task UserStoppedTyping()
     {
         if (string.IsNullOrWhiteSpace(SearchText))
         {
-            MauiLibraries.Clear();
+            await _messageBus.DispatchAsync(() => MauiLibraries.Clear());
             foreach (var library in GetAllLibraries())
             {
-                MauiLibraries.Add(library);
+                await _messageBus.DispatchAsync(() => MauiLibraries.Add(library));
             }
         }
         else
@@ -138,16 +107,18 @@ public class MainViewModel : BaseViewModel
             for (var i = 0; i < MauiLibraries.Count; i++)
             {
                 if (!MauiLibraries[i].Title.Contains(SearchText, StringComparison.InvariantCultureIgnoreCase))
-                    MauiLibraries.RemoveAt(i);
+                    await _messageBus.DispatchAsync(() => MauiLibraries.RemoveAt(i));
             }
         }
     }
 
+    [RelayCommand]
     private async Task SearchBarDoubleTapped()
     {
         await Toast.Make(".Net MAUI rules!").Show();
     }
 
+    [RelayCommand]
     private async Task SelectionChanged()
     {
         try
@@ -164,20 +135,22 @@ public class MainViewModel : BaseViewModel
         }
     }
 
-    private async Task HandelRefreshing()
+    [RelayCommand]
+    private async Task Refresh()
     {
         try
         {
             IsSearchBarEnabled = false;
             await Task.Delay(2000);
-
-            MauiLibraries.Add(new()
-            {
-                Title = "SharpNado.Tabs",
-                Description =
-                    "Pure MAUI and Xamarin.Forms, including fixed tabs, scrollable tabs, bottom tabs, badge, segmented tabs etc.",
-                ImageSource = "https://api.nuget.org/v3-flatcontainer/sharpnado.tabs/3.0.0/icon"
-            });
+            await _messageBus.DispatchAsync(() =>
+                MauiLibraries.Add(new()
+                {
+                    Title = "SharpNado.Tabs",
+                    Description =
+                        "Pure MAUI and Xamarin.Forms, including fixed tabs, scrollable tabs, bottom tabs, badge, segmented tabs etc.",
+                    ImageSource = "https://api.nuget.org/v3-flatcontainer/sharpnado.tabs/3.0.0/icon"
+                })
+            );
         }
         catch (Exception ex)
         {

@@ -1,44 +1,19 @@
 using System.Windows.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using HelloMaui.Models;
 
 namespace HelloMaui.ViewModels;
 
-public class DetailsViewModel : BaseViewModel, IQueryAttributable
+public partial class DetailsViewModel : ObservableObject, IQueryAttributable
 {
-    public DetailsViewModel()
-    {
-        BackCommand = new AsyncRelayCommand(BackBtnClicked);
-    }
-
     public static readonly string LibModelKey = nameof(LibraryModel);
+    [ObservableProperty] private ImageSource _imageSource;
+    [ObservableProperty] private string _title;
+    [ObservableProperty] private string _description;
 
-    private ImageSource _imageSource;
-    private string _title;
-    private string _description;
-    public ICommand BackCommand { get; }
-
-
-    public ImageSource ImageSource
-    {
-        get => _imageSource;
-        set => SetProperty(ref _imageSource, value);
-    }
-
-    public string Title
-    {
-        get => _title;
-        set => SetProperty(ref _title, value);
-    }
-
-    public string Description
-    {
-        get => _description;
-        set => SetProperty(ref _description, value);
-    }
-
-
-    private async Task BackBtnClicked()
+    [RelayCommand]
+    private async Task GoBack()
     {
         await Shell.Current.GoToAsync("..", animate: true);
     }

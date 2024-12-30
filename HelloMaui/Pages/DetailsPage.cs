@@ -27,7 +27,7 @@ public class DetailsPage : BaseContentPage<DetailsViewModel>
                     .Bind(Label.TextProperty, getter: (DetailsViewModel dvm) => dvm.Description),
                 new Button()
                     .Text("Back")
-                    .Bind(Button.CommandProperty, getter: (DetailsViewModel dvm) => dvm.BackCommand)
+                    .Bind(Button.CommandProperty, getter: (DetailsViewModel dvm) => dvm.GoBackCommand)
             }
         }.Padding(12);
     }

@@ -86,7 +86,7 @@ internal sealed class WelcomePopUp : Popup
     public WelcomePopUp()
     {
         Content = new Label()
-            .Text("WELCOME TO MAUI!")
+            .Text("WELCOME!")
             .Font(size: 42, bold: true)
             .Center()
             .TextCenter();
