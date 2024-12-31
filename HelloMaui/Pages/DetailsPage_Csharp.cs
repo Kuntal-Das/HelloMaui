@@ -4,11 +4,11 @@ using HelloMaui.ViewModels;
 
 namespace HelloMaui.Pages;
 
-public class DetailsPage : BaseContentPage<DetailsViewModel>
+public class DetailsPage_Csharp : BaseContentPage<DetailsViewModel>
 {
-    public DetailsPage(DetailsViewModel detailsViewModel) : base(detailsViewModel)
+    public DetailsPage_Csharp(DetailsViewModel detailsViewModel) : base(detailsViewModel)
     {
-        this.Bind(DetailsPage.TitleProperty, (DetailsViewModel dvm) => dvm.Title);
+        this.Bind(DetailsPage_Csharp.TitleProperty, (DetailsViewModel dvm) => dvm.Title);
         Content = new VerticalStackLayout()
         {
             Spacing = 12,

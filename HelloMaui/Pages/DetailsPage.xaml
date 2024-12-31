@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<local:BaseContentPage
+    x:TypeArguments="vm:DetailsViewModel"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:HelloMaui.Pages"
+    xmlns:vm="clr-namespace:HelloMaui.ViewModels"
+    x:Class="HelloMaui.Pages.DetailsPage"
+    x:DataType="vm:DetailsViewModel"
+    Title="{Binding Title}">
+    <Shell.BackButtonBehavior>
+        <!-- <BackButtonBehavior TextOverride="{OnPlatform iOS='List'}" /> -->
+        <BackButtonBehavior TextOverride="{OnIdiom Desktop='Got Back to List'}" />
+    </Shell.BackButtonBehavior>
+    <ContentPage.Content>
+        <VerticalStackLayout
+            Spacing="12"
+            Padding="12">
+            <Image
+                HeightRequest="250"
+                WidthRequest="250"
+                HorizontalOptions="Center"
+                VerticalOptions="Center"
+                Source="{Binding ImageSource}" />
+            <Label
+                FontSize="16"
+                FontAttributes="Italic"
+                HorizontalOptions="Center"
+                VerticalOptions="Center"
+                HorizontalTextAlignment="Center"
+                VerticalTextAlignment="Center"
+                Text="{Binding Description}" />
+            <Button
+                Command="{Binding GoBackCommand}"
+                Text="Back" />
+        </VerticalStackLayout>
+    </ContentPage.Content>
+</local:BaseContentPage>

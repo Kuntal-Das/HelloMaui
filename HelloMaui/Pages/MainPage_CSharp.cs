@@ -6,7 +6,7 @@ using HelloMaui.Views;
 
 namespace HelloMaui.Pages;
 
-public class MainPage : BaseContentPage<MainViewModel>
+public class MainPage_CSharp : BaseContentPage<MainViewModel>
 {
     internal enum Row
     {
@@ -29,7 +29,7 @@ public class MainPage : BaseContentPage<MainViewModel>
         this.ShowPopup(new WelcomePopUp());
     }
 
-    public MainPage(MainViewModel mainViewModel) : base(mainViewModel)
+    public MainPage_CSharp(MainViewModel mainViewModel) : base(mainViewModel)
     {
         Title = "Maui Collection View";
         this.AppThemeColorBinding(BackgroundColorProperty, Colors.LightBlue, Color.FromArgb("#3b4a4f"));

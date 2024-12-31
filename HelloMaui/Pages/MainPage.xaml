@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<local:BaseContentPage
+    x:Name="This"
+    x:TypeArguments="vm:MainViewModel"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:local="clr-namespace:HelloMaui.Pages"
+    xmlns:vm="clr-namespace:HelloMaui.ViewModels"
+    xmlns:views="clr-namespace:HelloMaui.Views"
+    x:Class="HelloMaui.Pages.MainPage"
+    x:DataType="vm:MainViewModel"
+    Background="{AppThemeBinding Light=LightBlue ,Dark=#3b4a4f}">
+    <!-- xmlns:toolKitBehaviours="clr-namespace:CommunityToolkit.Maui.Behaviors;assembly=CommunityToolkit.Maui" -->
+    <ContentPage.Content>
+        <RefreshView
+            Margin="0,24,0,0"
+            IsRefreshing="{Binding  IsRefreshing}"
+            Command="{Binding RefreshCommand}">
+            <CollectionView
+                ItemsSource="{Binding MauiLibraries}"
+                SelectionChangedCommand="{Binding SelectionChangedCommand}"
+                SelectedItem="{Binding SelectedLibraryItem}"
+                SelectionMode="Single">
+
+                <CollectionView.ItemTemplate>
+                    <views:MauiLibrariesDataTemplate />
+                </CollectionView.ItemTemplate>
+
+                <CollectionView.Header>
+                    <SearchBar
+                        Placeholder="Search Titles"
+                        Margin="0,0,0,8"
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center"
+                        HorizontalTextAlignment="Center"
+                        VerticalTextAlignment="Center"
+                        Text="{Binding SearchText, Mode=TwoWay}"
+                        IsEnabled="{Binding IsSearchBarEnabled}"
+                        TextColor="{AppThemeBinding Light=Black, Dark=LightGray}">
+                        <SearchBar.GestureRecognizers>
+                            <TapGestureRecognizer
+                                NumberOfTapsRequired="2"
+                                Command="{Binding SearchBarDoubleTappedCommand}" />
+                        </SearchBar.GestureRecognizers>
+                        <SearchBar.Behaviors>
+                            <toolkit:UserStoppedTypingBehavior
+                                BindingContext="{Binding Source={x:Reference This}, Path=BindingContext}"
+                                StoppedTypingTimeThreshold="1000"
+                                ShouldDismissKeyboardAutomatically="True"
+                                Command="{Binding UserStoppedTypingCommand}" />
+                        </SearchBar.Behaviors>
+                    </SearchBar>
+                </CollectionView.Header>
+
+                <CollectionView.Footer>
+                    <Label
+                        Text="Dotnet MAUI: Zero to Hero"
+                        Padding="8,0,0,0"
+                        FontSize="10"
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center"
+                        HorizontalTextAlignment="Center"
+                        VerticalTextAlignment="Center"
+                        TextColor="{AppThemeBinding Light=#474f52,Dark=DarkGray}" />
+                </CollectionView.Footer>
+            </CollectionView>
+        </RefreshView>
+    </ContentPage.Content>
+</local:BaseContentPage>

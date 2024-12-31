@@ -87,7 +87,7 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty] private string? _searchText;
     [ObservableProperty] private bool _isSearchBarEnabled;
     [ObservableProperty] private bool _isRefreshing;
-    [ObservableProperty] private object _selectedLibraryItem;
+    [ObservableProperty] private object? _selectedLibraryItem;
     private readonly IDispatcher _messageBus;
     public ObservableCollection<LibraryModel> MauiLibraries { get; }
 
@@ -96,18 +96,32 @@ public partial class MainViewModel : ObservableObject
     {
         if (string.IsNullOrWhiteSpace(SearchText))
         {
+#if IOS
             await _messageBus.DispatchAsync(() => MauiLibraries.Clear());
+#else
+            MauiLibraries.Clear();
+#endif
             foreach (var library in GetAllLibraries())
             {
+#if IOS
                 await _messageBus.DispatchAsync(() => MauiLibraries.Add(library));
+#else
+                MauiLibraries.Add(library);
+#endif
             }
         }
         else
         {
             for (var i = 0; i < MauiLibraries.Count; i++)
             {
-                if (!MauiLibraries[i].Title.Contains(SearchText, StringComparison.InvariantCultureIgnoreCase))
+                if (!MauiLibraries[i].Title.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
+                {
+#if IOS
                     await _messageBus.DispatchAsync(() => MauiLibraries.RemoveAt(i));
+#else
+                    MauiLibraries.RemoveAt(i);
+#endif
+                }
             }
         }
     }
@@ -142,15 +156,18 @@ public partial class MainViewModel : ObservableObject
         {
             IsSearchBarEnabled = false;
             await Task.Delay(2000);
-            await _messageBus.DispatchAsync(() =>
-                MauiLibraries.Add(new()
-                {
-                    Title = "SharpNado.Tabs",
-                    Description =
-                        "Pure MAUI and Xamarin.Forms, including fixed tabs, scrollable tabs, bottom tabs, badge, segmented tabs etc.",
-                    ImageSource = "https://api.nuget.org/v3-flatcontainer/sharpnado.tabs/3.0.0/icon"
-                })
-            );
+            var newLib = new LibraryModel()
+            {
+                Title = "SharpNado.Tabs",
+                Description =
+                    "Pure MAUI and Xamarin.Forms, including fixed tabs, scrollable tabs, bottom tabs, badge, segmented tabs etc.",
+                ImageSource = "https://api.nuget.org/v3-flatcontainer/sharpnado.tabs/3.0.0/icon"
+            };
+#if IOS
+            await _messageBus.DispatchAsync(() =>MauiLibraries.Add(newLib));
+#else
+            MauiLibraries.Add(newLib);
+#endif
         }
         catch (Exception ex)
         {

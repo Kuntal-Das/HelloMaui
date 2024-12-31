@@ -4,9 +4,9 @@ namespace HelloMaui;
 
 public class AppShell : Shell
 {
-    public AppShell(MainPage mainPage)
+    public AppShell(MainPage mainPageCSharp)
     {
-        Items.Add(mainPage);
+        Items.Add(mainPageCSharp);
         CreateRoutes();
     }
 
