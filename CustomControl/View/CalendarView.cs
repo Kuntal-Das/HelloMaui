@@ -1,18 +1,22 @@
-namespace HelloMaui.Views;
+using CustomControl.Core;
 
-public class CalendarView : View, ICalendarView
+namespace CustomControl.View;
+
+public class CalendarView : Microsoft.Maui.Controls.View, ICalendarView
 {
-    public static BindableProperty FirstDayOfWeekProperty = BindableProperty.Create(nameof(FirstDayOfWeek),
-        typeof(DayOfWeek), typeof(CalendarView), DayOfWeek.Monday);
+    public static readonly BindableProperty FirstDayOfWeekProperty = BindableProperty.Create(nameof(FirstDayOfWeek),
+        typeof(DayOfWeek), typeof(CalendarView), default(DayOfWeek));
 
-    public static BindableProperty MinDateProperty =
-        BindableProperty.Create(nameof(MinDate), typeof(DateTime), typeof(CalendarView), DateTime.MinValue);
+    public static readonly BindableProperty MinDateProperty = BindableProperty.Create(nameof(MinDate),
+        typeof(DateTimeOffset), typeof(CalendarView), DateTimeOffset.MinValue);
 
-    public static BindableProperty MaxDateProperty =
-        BindableProperty.Create(nameof(MaxDate), typeof(DateTime), typeof(CalendarView), DateTime.MaxValue);
+    public static readonly BindableProperty MaxDateProperty = BindableProperty.Create(nameof(MaxDate),
+        typeof(DateTimeOffset), typeof(CalendarView), DateTimeOffset.MaxValue);
 
-    public static BindableProperty SelectedDateProperty = BindableProperty.Create(nameof(SelectedDate),
-        typeof(DateTime), typeof(CalendarView), DateTime.MinValue);
+    public static readonly BindableProperty SelectedDateProperty =
+        BindableProperty.Create(nameof(SelectedDate), typeof(DateTimeOffset?), typeof(CalendarView));
+
+    public event EventHandler<SelectedDateChangedEventArgs>? SelectedDateChanged;
 
     public DayOfWeek FirstDayOfWeek
     {
@@ -37,8 +41,6 @@ public class CalendarView : View, ICalendarView
         get => (DateTimeOffset?)GetValue(SelectedDateProperty);
         set => SetValue(SelectedDateProperty, value);
     }
-
-    public event EventHandler<SelectedDateChangedEventArgs>? SelectedDateChanged;
 
     void ICalendarView.OnSelectedDateChanged(DateTimeOffset? selectedDate)
     {

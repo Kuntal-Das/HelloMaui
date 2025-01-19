@@ -22,6 +22,11 @@ public class AppShell : Shell
             return $"//{nameof(MainPage)}";
         }
 
+        if (typeof(T) == typeof(CalendarPage))
+        {
+            return $"//{nameof(MainPage)}//{nameof(CalendarPage)}";
+        }
+
         throw new NotImplementedException($"{typeof(T)} is not configured in Routing");
     }
 
@@ -29,5 +34,6 @@ public class AppShell : Shell
     {
         Routing.RegisterRoute(GetRoute<MainPage>(), typeof(MainPage));
         Routing.RegisterRoute(GetRoute<DetailsPage>(), typeof(DetailsPage));
+        Routing.RegisterRoute(GetRoute<CalendarPage>(), typeof(CalendarPage));
     }
 }

@@ -1,5 +1,7 @@
 ﻿using CommunityToolkit.Maui;
 using CommunityToolkit.Maui.Markup;
+using CustomControl.Handlers;
+using CustomControl.View;
 using HelloMaui.Pages;
 using HelloMaui.ViewModels;
 using Microsoft.Extensions.Logging;
@@ -15,6 +17,7 @@ public static class MauiProgram
             .UseMauiApp<App>()
             .UseMauiCommunityToolkit()
             .UseMauiCommunityToolkitMarkup()
+            .ConfigureMauiHandlers(handlers => { handlers.AddHandler<CalendarView, CalendarHandler>(); })
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -33,6 +36,7 @@ public static class MauiProgram
 
         builder.Services.AddTransient<MainViewModel>();
         builder.Services.AddTransient<DetailsViewModel>();
+        builder.Services.AddTransient<CalendarPage>();
 
         return builder.Build();
     }

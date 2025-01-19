@@ -164,7 +164,7 @@ public partial class MainViewModel : ObservableObject
                 ImageSource = "https://api.nuget.org/v3-flatcontainer/sharpnado.tabs/3.0.0/icon"
             };
 #if IOS
-            await _messageBus.DispatchAsync(() =>MauiLibraries.Add(newLib));
+            await _messageBus.DispatchAsync(() => MauiLibraries.Add(newLib));
 #else
             MauiLibraries.Add(newLib);
 #endif
@@ -178,5 +178,11 @@ public partial class MainViewModel : ObservableObject
             IsRefreshing = false;
             IsSearchBarEnabled = true;
         }
+    }
+
+    [RelayCommand]
+    private async Task GotoCalendarpage()
+    {
+        await Shell.Current.GoToAsync(AppShell.GetRoute<CalendarPage>());
     }
 }

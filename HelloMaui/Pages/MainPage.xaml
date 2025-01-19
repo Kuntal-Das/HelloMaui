@@ -13,6 +13,11 @@
     x:DataType="vm:MainViewModel"
     Background="{AppThemeBinding Light=LightBlue ,Dark=#3b4a4f}">
     <!-- xmlns:toolKitBehaviours="clr-namespace:CommunityToolkit.Maui.Behaviors;assembly=CommunityToolkit.Maui" -->
+    <ContentPage.ToolbarItems>
+        <ToolbarItem
+            Text="Calendar"
+            Command="{Binding GotoCalendarpageCommand}" />
+    </ContentPage.ToolbarItems>
     <ContentPage.Content>
         <RefreshView
             Margin="0,24,0,0"
