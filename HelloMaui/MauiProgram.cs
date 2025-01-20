@@ -3,8 +3,10 @@ using CommunityToolkit.Maui.Markup;
 using CustomControl.Handlers;
 using CustomControl.View;
 using HelloMaui.Pages;
+using HelloMaui.Services;
 using HelloMaui.ViewModels;
 using Microsoft.Extensions.Logging;
+using Refit;
 
 namespace HelloMaui;
 
@@ -27,7 +29,10 @@ public static class MauiProgram
 #if DEBUG
         builder.Logging.AddDebug();
 #endif
-
+        builder.Services.AddRefitClient<IMauiLibraries>().ConfigureHttpClient(client =>
+            client.BaseAddress = new Uri("https://6dhbgfw1de.execute-api.us-west-1.amazonaws.com/"));
+        builder.Services.AddSingleton<MauiLibrariesApiServices>();
+        
         builder.Services.AddSingleton<AppShell>();
         builder.Services.AddSingleton<App>();
 

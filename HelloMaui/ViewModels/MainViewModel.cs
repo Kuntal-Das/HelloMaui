@@ -9,9 +9,9 @@ namespace HelloMaui.ViewModels;
 
 public partial class MainViewModel : ObservableObject
 {
-    public MainViewModel(IDispatcher messageBus)
+    public MainViewModel(IDispatcher dispatcher)
     {
-        _messageBus = messageBus;
+        _dispatcher = dispatcher;
         MauiLibraries = new(GetAllLibraries());
         SearchText = "";
         IsSearchBarEnabled = true;
@@ -88,23 +88,29 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty] private bool _isSearchBarEnabled;
     [ObservableProperty] private bool _isRefreshing;
     [ObservableProperty] private object? _selectedLibraryItem;
-    private readonly IDispatcher _messageBus;
+    private readonly IDispatcher _dispatcher;
     public ObservableCollection<LibraryModel> MauiLibraries { get; }
 
     [RelayCommand]
-    private async Task UserStoppedTyping()
+    private
+#if IOS
+        async Task
+#else
+        void
+#endif
+        UserStoppedTyping()
     {
         if (string.IsNullOrWhiteSpace(SearchText))
         {
 #if IOS
-            await _messageBus.DispatchAsync(() => MauiLibraries.Clear());
+            await _dispatcher.DispatchAsync(() => MauiLibraries.Clear()).ConfigureAwait(false);
 #else
             MauiLibraries.Clear();
 #endif
             foreach (var library in GetAllLibraries())
             {
 #if IOS
-                await _messageBus.DispatchAsync(() => MauiLibraries.Add(library));
+                await _dispatcher.DispatchAsync(() => MauiLibraries.Add(library)).ConfigureAwait(false);
 #else
                 MauiLibraries.Add(library);
 #endif
@@ -117,7 +123,7 @@ public partial class MainViewModel : ObservableObject
                 if (!MauiLibraries[i].Title.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
                 {
 #if IOS
-                    await _messageBus.DispatchAsync(() => MauiLibraries.RemoveAt(i));
+                    await _dispatcher.DispatchAsync(() => MauiLibraries.RemoveAt(i)).ConfigureAwait(false);
 #else
                     MauiLibraries.RemoveAt(i);
 #endif
@@ -164,7 +170,7 @@ public partial class MainViewModel : ObservableObject
                 ImageSource = "https://api.nuget.org/v3-flatcontainer/sharpnado.tabs/3.0.0/icon"
             };
 #if IOS
-            await _messageBus.DispatchAsync(() => MauiLibraries.Add(newLib));
+            await _dispatcher.DispatchAsync(() => MauiLibraries.Add(newLib));
 #else
             MauiLibraries.Add(newLib);
 #endif

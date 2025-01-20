@@ -1,16 +1,20 @@
 using CustomControl.Core;
 using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
+
 #if WINDOWS
 using Microsoft.UI.Xaml.Controls;
 using Calendar = Microsoft.UI.Xaml.Controls.CalendarView;
 using DayOfWeek = Windows.Globalization.DayOfWeek;
+
 #elif ANDROID
 using Calendar = Android.Widget.CalendarView;
+
 #elif IOS || MACCATALYST
 using Foundation;
 using ObjCRuntime;
 using UIKit;
+
 #endif
 
 namespace CustomControl.Handlers;
@@ -21,8 +25,9 @@ public class CalendarHandler
 #elif ANDROID
     : ViewHandler<ICalendarView, Calendar>
 #elif IOS || MACCATALYST
-    : ViewHandler<ICalendarView, UICalendarView>, IDisposable
+    : ViewHandler<ICalendarView, UICalendarView>
 #endif
+        , IDisposable
 {
     public CalendarHandler(IPropertyMapper mapper, CommandMapper? commandMapper = null) : base(mapper, commandMapper)
     {
@@ -30,6 +35,11 @@ public class CalendarHandler
 
     public CalendarHandler() : this(PropertyMapper, CommandMapper)
     {
+    }
+
+    ~CalendarHandler()
+    {
+        Dispose(false);
     }
 
     public static IPropertyMapper<ICalendarView, CalendarHandler> PropertyMapper =
@@ -160,16 +170,6 @@ public class CalendarHandler
 #elif IOS || MACCATALYST
     UICalendarSelection? _calendarSelection;
 
-    ~CalendarHandler()
-    {
-        Dispose(false);
-    }
-
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
 
     protected override UICalendarView CreatePlatformView()
     {
@@ -181,17 +181,6 @@ public class CalendarHandler
         base.ConnectHandler(platformView);
 
         _calendarSelection = new UICalendarSelectionSingleDate(new CalendarSelectionSingleDateDelegate(VirtualView));
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        ReleaseUnmanagedResources();
-
-        if (disposing)
-        {
-            _calendarSelection?.Dispose();
-            _calendarSelection = null;
-        }
     }
 
     static void MapSelectedDate(CalendarHandler handler, ICalendarView virtualView)
@@ -243,11 +232,6 @@ public class CalendarHandler
         handler.PlatformView.AvailableDateRange = calendarViewDateRange;
     }
 
-    void ReleaseUnmanagedResources()
-    {
-        // TODO release unmanaged resources here
-    }
-
     sealed class CalendarSelectionSingleDateDelegate(ICalendarView calendarView)
         : IUICalendarSelectionSingleDateDelegate
     {
@@ -265,4 +249,30 @@ public class CalendarHandler
         }
     }
 #endif
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        ReleaseUnmanagedResources();
+
+        if (disposing)
+        {
+#if WINDOWS
+
+#elif ANDROID
+#elif IOS || MACCATALYST
+            _calendarSelection?.Dispose();
+            _calendarSelection = null;
+#endif
+        }
+    }
+
+    void ReleaseUnmanagedResources()
+    {
+        // TODO release unmanaged resources here
+    }
 }
