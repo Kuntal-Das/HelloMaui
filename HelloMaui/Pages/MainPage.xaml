@@ -20,6 +20,7 @@
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
         <RefreshView
+            x:Name="main_rv"
             Margin="0,24,0,0"
             IsRefreshing="{Binding  IsRefreshing}"
             Command="{Binding RefreshCommand}">

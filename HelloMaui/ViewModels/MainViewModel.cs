@@ -4,101 +4,33 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using HelloMaui.Models;
 using HelloMaui.Pages;
+using HelloMaui.Services;
 
 namespace HelloMaui.ViewModels;
 
 public partial class MainViewModel : ObservableObject
 {
-    public MainViewModel(IDispatcher dispatcher)
+    public MainViewModel(IDispatcher dispatcher, IMauiLibraries mauiApiServices)
     {
         _dispatcher = dispatcher;
-        MauiLibraries = new(GetAllLibraries());
+        _mauiApiServices = mauiApiServices;
+        MauiLibraries = new();
         SearchText = "";
         IsSearchBarEnabled = true;
     }
 
-    private static IEnumerable<LibraryModel> GetAllLibraries()
-    {
-        yield return new LibraryModel()
-        {
-            Title = "Microsoft.Maui",
-            Description =
-                ".NET Multi-platform App UI is a framework for building native device applications spanning mobile, tablet, and desktop",
-            ImageSource = "https://api.nuget.org/v3-flatcontainer/microsoft.maui.controls/8.0.3/icon"
-        };
-
-        yield return new LibraryModel()
-        {
-            Title = "CommunityToolkit.Maui",
-            Description =
-                "The .NET MAUI Community Toolkit is a community-created library that contains .NET MAUI Extensions, Advanced UI/UX Controls, and Behaviors to help make your life as a .NET MAUI developer easier",
-            ImageSource = "https://api.nuget.org/v3-flatcontainer/communitytoolkit.maui/5.2.0/icon"
-        };
-
-        yield return new LibraryModel
-        {
-            Title = "CommunityToolkit.Maui.Markup",
-            Description =
-                "The .NET MAUI Markup Community Toolkit is a community-created library that contains Fluent C# Extension Methods to easily create your User Interface in C#",
-            ImageSource = "https://api.nuget.org/v3-flatcontainer/communitytoolkit.maui.markup/3.2.0/icon"
-        };
-
-        yield return new LibraryModel
-        {
-            Title = "CommunityToolkit.MVVM",
-            Description =
-                "This package includes a .NET MVVM library with helpers such as ObservableObject, ObservableRecipient, ObservableValidator, RelayCommand, AsyncRelayCommand, WeakReferenceMessenger, StrongReferenceMessenger and IoC",
-            ImageSource = "https://api.nuget.org/v3-flatcontainer/communitytoolkit.mvvm/8.2.0/icon"
-        };
-
-        yield return new LibraryModel
-        {
-            Title = "Sentry.Maui",
-            Description =
-                "Bad software is everywhere, and we're tired of it. Sentry is on a mission to help developers write better software faster, so we can get back to enjoying technology",
-            ImageSource = "https://api.nuget.org/v3-flatcontainer/sentry.maui/3.33.1/icon"
-        };
-
-        yield return new LibraryModel
-        {
-            Title = "Esri.ArcGISRuntime.Maui",
-            Description =
-                "Contains APIs and UI controls for building native mobile and desktop apps with the .NET Multi-platform App UI (.NET MAUI) cross-platform framework",
-            ImageSource = "https://api.nuget.org/v3-flatcontainer/esri.arcgisruntime.maui/100.14.1-preview3/icon"
-        };
-
-        yield return new LibraryModel
-        {
-            Title = "Syncfusion.Maui.Core",
-            Description =
-                "This package contains .NET MAUI Avatar View, .NET MAUI Badge View, .NET MAUI Busy Indicator, .NET MAUI Effects View, and .NET MAUI Text Input Layout components for .NET MAUI application",
-            ImageSource = "https://api.nuget.org/v3-flatcontainer/syncfusion.maui.core/21.2.10/icon"
-        };
-
-        yield return new LibraryModel
-        {
-            Title = "DotNet.Meteor",
-            Description = "A VSCode extension that can run and debug .NET apps (based on Clancey VSCode.Comet)",
-            ImageSource =
-                "https://nromanov.gallerycdn.vsassets.io/extensions/nromanov/dotnet-meteor/3.0.3/1686392945636/Microsoft.VisualStudio.Services.Icons.Default"
-        };
-    }
-
+    public IReadOnlyList<LibraryModel> _mauiLibrariesCache;
     [ObservableProperty] private string? _searchText;
     [ObservableProperty] private bool _isSearchBarEnabled;
     [ObservableProperty] private bool _isRefreshing;
     [ObservableProperty] private object? _selectedLibraryItem;
     private readonly IDispatcher _dispatcher;
+    private readonly IMauiLibraries _mauiApiServices;
+
     public ObservableCollection<LibraryModel> MauiLibraries { get; }
 
     [RelayCommand]
-    private
-#if IOS
-        async Task
-#else
-        void
-#endif
-        UserStoppedTyping()
+    private async Task UserStoppedTyping()
     {
         if (string.IsNullOrWhiteSpace(SearchText))
         {
@@ -107,7 +39,8 @@ public partial class MainViewModel : ObservableObject
 #else
             MauiLibraries.Clear();
 #endif
-            foreach (var library in GetAllLibraries())
+            var libs = _mauiLibrariesCache ?? Array.Empty<LibraryModel>();
+            foreach (var library in libs)
             {
 #if IOS
                 await _dispatcher.DispatchAsync(() => MauiLibraries.Add(library)).ConfigureAwait(false);
@@ -118,16 +51,22 @@ public partial class MainViewModel : ObservableObject
         }
         else
         {
+            var removeAts = new HashSet<int>();
             for (var i = 0; i < MauiLibraries.Count; i++)
             {
                 if (!MauiLibraries[i].Title.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
                 {
-#if IOS
-                    await _dispatcher.DispatchAsync(() => MauiLibraries.RemoveAt(i)).ConfigureAwait(false);
-#else
-                    MauiLibraries.RemoveAt(i);
-#endif
+                    removeAts.Add(i);
                 }
+            }
+
+            foreach (var i in removeAts)
+            {
+#if IOS
+                await _dispatcher.DispatchAsync(() => MauiLibraries.RemoveAt(i)).ConfigureAwait(false);
+#else
+                MauiLibraries.RemoveAt(i);
+#endif
             }
         }
     }
@@ -158,22 +97,20 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     private async Task Refresh()
     {
+        var minWaitTask = Task.Delay(1500).ConfigureAwait(false);
         try
         {
             IsSearchBarEnabled = false;
-            await Task.Delay(2000);
-            var newLib = new LibraryModel()
+            _mauiLibrariesCache ??= await _mauiApiServices.GetMauiLibrariesAsync().ConfigureAwait(false);
+
+            foreach (var library in _mauiLibrariesCache)
             {
-                Title = "SharpNado.Tabs",
-                Description =
-                    "Pure MAUI and Xamarin.Forms, including fixed tabs, scrollable tabs, bottom tabs, badge, segmented tabs etc.",
-                ImageSource = "https://api.nuget.org/v3-flatcontainer/sharpnado.tabs/3.0.0/icon"
-            };
 #if IOS
-            await _dispatcher.DispatchAsync(() => MauiLibraries.Add(newLib));
+                await _dispatcher.DispatchAsync(() => MauiLibraries.Add(library));
 #else
-            MauiLibraries.Add(newLib);
+                MauiLibraries.Add(library);
 #endif
+            }
         }
         catch (Exception ex)
         {
@@ -181,6 +118,7 @@ public partial class MainViewModel : ObservableObject
         }
         finally
         {
+            await minWaitTask;
             IsRefreshing = false;
             IsSearchBarEnabled = true;
         }
