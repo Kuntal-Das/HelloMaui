@@ -5,7 +5,9 @@ using CustomControl.View;
 using HelloMaui.Pages;
 using HelloMaui.Services;
 using HelloMaui.ViewModels;
+using Microsoft.Extensions.Http.Resilience;
 using Microsoft.Extensions.Logging;
+using Polly;
 using Refit;
 
 namespace HelloMaui;
@@ -30,9 +32,10 @@ public static class MauiProgram
         builder.Logging.AddDebug();
 #endif
         builder.Services.AddRefitClient<IMauiLibraries>().ConfigureHttpClient(client =>
-            client.BaseAddress = new Uri("https://6dhbgfw1de.execute-api.us-west-1.amazonaws.com/"));
-        builder.Services.AddSingleton<MauiLibrariesApiServices>();
-        
+                client.BaseAddress = new Uri("https://6dhbgfw1de.execute-api.us-west-1.amazonaws.com/"))
+            .AddStandardResilienceHandler(options => options.Retry = new MobileHttpRetryStategyOptions());
+        // builder.Services.AddSingleton<MauiLibrariesApiServices>();
+
         builder.Services.AddSingleton<AppShell>();
         builder.Services.AddSingleton<App>();
 
@@ -44,5 +47,16 @@ public static class MauiProgram
         builder.Services.AddTransient<CalendarPage>();
 
         return builder.Build();
+    }
+
+    sealed class MobileHttpRetryStategyOptions : HttpRetryStrategyOptions
+    {
+        public MobileHttpRetryStategyOptions()
+        {
+            BackoffType = DelayBackoffType.Exponential;
+            MaxRetryAttempts = 3;
+            UseJitter = true;
+            Delay = TimeSpan.FromSeconds(2);
+        }
     }
 }
