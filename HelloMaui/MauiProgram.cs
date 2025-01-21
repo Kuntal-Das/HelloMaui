@@ -32,6 +32,8 @@ public static class MauiProgram
         builder.Logging.AddDebug();
 #endif
         builder.Services.AddSingleton<IPreferences>(Preferences.Default);
+        builder.Services.AddSingleton<IFileSystem>(FileSystem.Current);
+
         builder.Services.AddRefitClient<IMauiLibraries>().ConfigureHttpClient(client =>
                 client.BaseAddress = new Uri("https://6dhbgfw1de.execute-api.us-west-1.amazonaws.com/"))
             .AddStandardResilienceHandler(options => options.Retry = new MobileHttpRetryStategyOptions());
