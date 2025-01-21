@@ -12,9 +12,18 @@ namespace HelloMaui.Pages;
 
 public partial class MainPage : BaseContentPage<MainViewModel>
 {
-    public MainPage(MainViewModel mainViewModel) : base(mainViewModel)
+    private readonly IPreferences _preferences;
+
+    public MainPage(MainViewModel mainViewModel, IPreferences preferences) : base(mainViewModel)
     {
         InitializeComponent();
+        _preferences = preferences;
+    }
+
+    public bool IsFirstRun
+    {
+        get => _preferences.Get(nameof(IsFirstRun), true);
+        set => _preferences.Set(nameof(IsFirstRun), value);
     }
 
     protected override void OnAppearing()
@@ -27,6 +36,10 @@ public partial class MainPage : BaseContentPage<MainViewModel>
             main_rv.IsRefreshing = true;
         }
 
-        this.ShowPopup(new WelcomePopUp());
+        if (IsFirstRun)
+        {
+            this.ShowPopup(new WelcomePopUp());
+            IsFirstRun = false;
+        }
     }
 }
