@@ -1,11 +1,10 @@
-using Microsoft.Extensions.Http.Resilience;
 using Polly;
 using Polly.Retry;
 using SQLite;
 
 namespace HelloMaui.Database;
 
-internal abstract class BaseDataBase
+public abstract class BaseDataBase
 {
     private readonly Lazy<SQLiteAsyncConnection> _databaseHolder;
 

@@ -2,6 +2,8 @@
 using CommunityToolkit.Maui.Markup;
 using CustomControl.Handlers;
 using CustomControl.View;
+using HelloMaui.Database;
+using HelloMaui.Models;
 using HelloMaui.Pages;
 using HelloMaui.Services;
 using HelloMaui.ViewModels;
@@ -33,7 +35,7 @@ public static class MauiProgram
 #endif
         builder.Services.AddSingleton<IPreferences>(Preferences.Default);
         builder.Services.AddSingleton<IFileSystem>(FileSystem.Current);
-
+        builder.Services.AddSingleton<LibraryModelDb>();
         builder.Services.AddRefitClient<IMauiLibraries>().ConfigureHttpClient(client =>
                 client.BaseAddress = new Uri("https://6dhbgfw1de.execute-api.us-west-1.amazonaws.com/"))
             .AddStandardResilienceHandler(options => options.Retry = new MobileHttpRetryStategyOptions());

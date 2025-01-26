@@ -3,7 +3,7 @@ using HelloMaui.Models;
 
 namespace HelloMaui.Database;
 
-internal class LibraryModelDb(IFileSystem fileSystem) : BaseDataBase(fileSystem)
+public class LibraryModelDb(IFileSystem fileSystem) : BaseDataBase(fileSystem)
 {
     public Task<List<LibraryModel>> GetLibraryListAsync(CancellationToken ct = default)
     {

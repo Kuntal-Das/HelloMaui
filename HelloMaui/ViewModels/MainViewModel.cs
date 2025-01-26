@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using HelloMaui.Database;
 using HelloMaui.Models;
 using HelloMaui.Pages;
 using HelloMaui.Services;
@@ -10,27 +11,28 @@ namespace HelloMaui.ViewModels;
 
 public partial class MainViewModel : ObservableObject
 {
-    public MainViewModel(IDispatcher dispatcher, IMauiLibraries mauiApiServices)
+    public MainViewModel(IDispatcher dispatcher, IMauiLibraries mauiApiServices, LibraryModelDb libraryModelDb)
     {
         _dispatcher = dispatcher;
         _mauiApiServices = mauiApiServices;
-        MauiLibraries = new();
+        _libraryModelDb = libraryModelDb;
+        MauiLibraries = [];
         SearchText = "";
         IsSearchBarEnabled = true;
     }
 
-    public IReadOnlyList<LibraryModel> _mauiLibrariesCache;
     [ObservableProperty] private string? _searchText;
     [ObservableProperty] private bool _isSearchBarEnabled;
     [ObservableProperty] private bool _isRefreshing;
     [ObservableProperty] private object? _selectedLibraryItem;
     private readonly IDispatcher _dispatcher;
     private readonly IMauiLibraries _mauiApiServices;
+    private readonly LibraryModelDb _libraryModelDb;
 
     public ObservableCollection<LibraryModel> MauiLibraries { get; }
 
     [RelayCommand]
-    private async Task UserStoppedTyping()
+    private async Task UserStoppedTyping(CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(SearchText))
         {
@@ -39,7 +41,9 @@ public partial class MainViewModel : ObservableObject
 #else
             MauiLibraries.Clear();
 #endif
-            var libs = _mauiLibrariesCache ?? Array.Empty<LibraryModel>();
+
+            var libs = await _libraryModelDb.GetLibraryListAsync(ct).ConfigureAwait(false);
+
             foreach (var library in libs)
             {
 #if IOS
@@ -98,12 +102,18 @@ public partial class MainViewModel : ObservableObject
     private async Task Refresh()
     {
         var minWaitTask = Task.Delay(1500).ConfigureAwait(false);
+        var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
         try
         {
             IsSearchBarEnabled = false;
-            _mauiLibrariesCache ??= await _mauiApiServices.GetMauiLibrariesAsync().ConfigureAwait(false);
+            var libs = await _libraryModelDb.GetLibraryListAsync(cts.Token).ConfigureAwait(false);
+            if (libs.Count == 0)
+            {
+                libs = await _mauiApiServices.GetMauiLibrariesAsync(cts.Token).ConfigureAwait(false);
+                await _libraryModelDb.InsertLibraryModelAsync(libs, cts.Token).ConfigureAwait(false);
+            }
 
-            foreach (var library in _mauiLibrariesCache)
+            foreach (var library in libs)
             {
 #if IOS
                 await _dispatcher.DispatchAsync(() => MauiLibraries.Add(library));
