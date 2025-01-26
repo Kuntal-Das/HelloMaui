@@ -36,10 +36,18 @@ public static class MauiProgram
         builder.Services.AddSingleton<IPreferences>(Preferences.Default);
         builder.Services.AddSingleton<IFileSystem>(FileSystem.Current);
         builder.Services.AddSingleton<LibraryModelDb>();
+
+        builder.Services.AddlibrariesGaphqlClient()
+            .ConfigureHttpClient(
+                static client => client.BaseAddress =
+                    new Uri("https://t41fbiwwda.execute-api.us-west-1.amazonaws.com/graphql"),
+                static builder =>
+                    builder.AddStandardResilienceHandler(options =>
+                        options.Retry = new MobileHttpRetryStategyOptions()));
+
         builder.Services.AddRefitClient<IMauiLibraries>().ConfigureHttpClient(client =>
                 client.BaseAddress = new Uri("https://6dhbgfw1de.execute-api.us-west-1.amazonaws.com/"))
             .AddStandardResilienceHandler(options => options.Retry = new MobileHttpRetryStategyOptions());
-        // builder.Services.AddSingleton<MauiLibrariesApiServices>();
 
         builder.Services.AddSingleton<AppShell>();
         builder.Services.AddSingleton<App>();
