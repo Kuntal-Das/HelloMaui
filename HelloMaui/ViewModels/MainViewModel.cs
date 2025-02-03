@@ -11,11 +11,13 @@ namespace HelloMaui.ViewModels;
 
 public partial class MainViewModel : ObservableObject
 {
-    public MainViewModel(IDispatcher dispatcher, IMauiLibraries mauiApiServices, LibraryModelDb libraryModelDb)
+    public MainViewModel(IDispatcher dispatcher, IMauiLibraries mauiApiServices, LibraryModelDb libraryModelDb,
+        LibrariesGaphqlClient graphqlClient)
     {
         _dispatcher = dispatcher;
         _mauiApiServices = mauiApiServices;
         _libraryModelDb = libraryModelDb;
+        _graphqlClient = new MauiLibraryGarphQlService(graphqlClient);
         MauiLibraries = [];
         SearchText = "";
         IsSearchBarEnabled = true;
@@ -28,6 +30,7 @@ public partial class MainViewModel : ObservableObject
     private readonly IDispatcher _dispatcher;
     private readonly IMauiLibraries _mauiApiServices;
     private readonly LibraryModelDb _libraryModelDb;
+    private readonly MauiLibraryGarphQlService _graphqlClient;
 
     public ObservableCollection<LibraryModel> MauiLibraries { get; }
 
@@ -102,29 +105,40 @@ public partial class MainViewModel : ObservableObject
     private async Task Refresh()
     {
         var minWaitTask = Task.Delay(1500).ConfigureAwait(false);
-        var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+        var cts = new CancellationTokenSource(TimeSpan.FromSeconds(550));
         try
         {
             IsSearchBarEnabled = false;
             var libs = await _libraryModelDb.GetLibraryListAsync(cts.Token).ConfigureAwait(false);
             if (libs.Count == 0)
             {
-                libs = await _mauiApiServices.GetMauiLibrariesAsync(cts.Token).ConfigureAwait(false);
-                await _libraryModelDb.InsertLibraryModelAsync(libs, cts.Token).ConfigureAwait(false);
-            }
-
-            foreach (var library in libs)
-            {
+                // libs = await _mauiApiServices.GetMauiLibrariesAsync(cts.Token).ConfigureAwait(false);
+                await foreach (var lib in _graphqlClient.GetLibrariesAsync(cts.Token).ConfigureAwait(false))
+                {
 #if IOS
-                await _dispatcher.DispatchAsync(() => MauiLibraries.Add(library));
+                    await _dispatcher.DispatchAsync(() => MauiLibraries.Add(lib));
 #else
-                MauiLibraries.Add(library);
+                    MauiLibraries.Add(lib);
 #endif
+                }
+
+                await _libraryModelDb.InsertLibraryModelAsync(MauiLibraries, cts.Token).ConfigureAwait(false);
+            }
+            else
+            {
+                foreach (var library in libs)
+                {
+#if IOS
+                    await _dispatcher.DispatchAsync(() => MauiLibraries.Add(library));
+#else
+                    MauiLibraries.Add(library);
+#endif
+                }
             }
         }
         catch (Exception ex)
         {
-            await Toast.Make(ex.Message).Show();
+            await Toast.Make(ex.Message).Show(cts.Token);
         }
         finally
         {

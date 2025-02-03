@@ -6,15 +6,13 @@ using Microsoft.Maui.Platform;
 using Microsoft.UI.Xaml.Controls;
 using Calendar = Microsoft.UI.Xaml.Controls.CalendarView;
 using DayOfWeek = Windows.Globalization.DayOfWeek;
-
 #elif ANDROID
 using Calendar = Android.Widget.CalendarView;
-
 #elif IOS || MACCATALYST
 using Foundation;
 using ObjCRuntime;
 using UIKit;
-
+#else
 #endif
 
 namespace CustomControl.Handlers;
@@ -26,6 +24,8 @@ public class CalendarHandler
     : ViewHandler<ICalendarView, Calendar>
 #elif IOS || MACCATALYST
     : ViewHandler<ICalendarView, UICalendarView>
+#else
+    : ViewHandler<ICalendarView, Microsoft.Maui.Controls.View>
 #endif
         , IDisposable
 {
@@ -248,6 +248,17 @@ public class CalendarHandler
             calendarView.OnSelectedDateChanged(date?.Date.ToDateTime());
         }
     }
+#else
+    protected override Microsoft.Maui.Controls.View CreatePlatformView() => throw new NotSupportedException();
+
+    private static void MapFirstDayOfWeek(CalendarHandler arg1, ICalendarView arg2) =>
+        throw new NotSupportedException();
+
+    private static void MapMinDate(CalendarHandler arg1, ICalendarView arg2) => throw new NotSupportedException();
+
+    private static void MapMaxDate(CalendarHandler arg1, ICalendarView arg2) => throw new NotSupportedException();
+    private static void MapSelectedDate(CalendarHandler arg1, ICalendarView arg2) => throw new NotSupportedException();
+
 #endif
     public void Dispose()
     {
@@ -262,7 +273,6 @@ public class CalendarHandler
         if (disposing)
         {
 #if WINDOWS
-
 #elif ANDROID
 #elif IOS || MACCATALYST
             _calendarSelection?.Dispose();

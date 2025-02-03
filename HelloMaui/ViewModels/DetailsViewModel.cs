@@ -8,9 +8,9 @@ namespace HelloMaui.ViewModels;
 public partial class DetailsViewModel : ObservableObject, IQueryAttributable
 {
     public static readonly string LibModelKey = nameof(LibraryModel);
-    [ObservableProperty] private ImageSource _imageSource;
-    [ObservableProperty] private string _title;
-    [ObservableProperty] private string _description;
+    [ObservableProperty] private ImageSource _imageSource = null!;
+    [ObservableProperty] private string _title = null!;
+    [ObservableProperty] private string _description = null!;
 
     [RelayCommand]
     private async Task GoBack()

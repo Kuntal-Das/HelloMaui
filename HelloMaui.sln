@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloMaui", "HelloMaui\Hell
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomControl", "CustomControl\CustomControl.csproj", "{7B601C9E-12DD-42A8-8976-48340BB644E5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloMaui.UnitTest", "HelloMaui.UnitTest\HelloMaui.UnitTest.csproj", "{5502566B-744E-4D3F-BBA2-84DE11A38B46}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{7B601C9E-12DD-42A8-8976-48340BB644E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7B601C9E-12DD-42A8-8976-48340BB644E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7B601C9E-12DD-42A8-8976-48340BB644E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5502566B-744E-4D3F-BBA2-84DE11A38B46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5502566B-744E-4D3F-BBA2-84DE11A38B46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5502566B-744E-4D3F-BBA2-84DE11A38B46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5502566B-744E-4D3F-BBA2-84DE11A38B46}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

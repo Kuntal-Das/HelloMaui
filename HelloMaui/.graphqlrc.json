@@ -3,7 +3,7 @@
   "documents": "**/*.graphql",
   "extensions": {
     "strawberryShake": {
-      "name": "librariesGaphqlClient",
+      "name": "LibrariesGaphqlClient",
       "url": "https://t41fbiwwda.execute-api.us-west-1.amazonaws.com/graphql",
       "records": {
         "inputs": false,

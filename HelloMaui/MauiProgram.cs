@@ -3,7 +3,6 @@ using CommunityToolkit.Maui.Markup;
 using CustomControl.Handlers;
 using CustomControl.View;
 using HelloMaui.Database;
-using HelloMaui.Models;
 using HelloMaui.Pages;
 using HelloMaui.Services;
 using HelloMaui.ViewModels;
@@ -37,7 +36,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<IFileSystem>(FileSystem.Current);
         builder.Services.AddSingleton<LibraryModelDb>();
 
-        builder.Services.AddlibrariesGaphqlClient()
+        builder.Services.AddLibrariesGaphqlClient()
             .ConfigureHttpClient(
                 static client => client.BaseAddress =
                     new Uri("https://t41fbiwwda.execute-api.us-west-1.amazonaws.com/graphql"),

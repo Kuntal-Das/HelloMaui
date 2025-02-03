@@ -21,7 +21,7 @@ public partial class App : Application
         // return new Window(Handler.MauiContext.Services.GetService<AppShell>());
         // return new Window(_appShell);
         //TODO: app restart casuses 'MauiContext is null.'
-        return new Window(_serviceProvider.GetService<AppShell>());
+        return new Window(_serviceProvider.GetService<AppShell>() ?? throw new InvalidOperationException());
     }
 
     protected override void OnResume()

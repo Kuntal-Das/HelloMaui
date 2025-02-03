@@ -46,7 +46,7 @@ public class MauiLibrariesDataTemplate() : DataTemplate(CreateGridTemplate)
             new Label()
                 {
                     VerticalTextAlignment = TextAlignment.Center,
-                    Style = AppStyles.GetResource<Style>("LargeFontlabel")
+                    Style = AppStyles.GetResource<Style>("LargeFontlabel") ?? throw new InvalidOperationException()
                 }
                 .Row(Row.Title).Column(Column.Text)
                 .Font(bold: true)
