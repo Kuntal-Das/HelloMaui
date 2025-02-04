@@ -35,6 +35,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<IPreferences>(Preferences.Default);
         builder.Services.AddSingleton<IFileSystem>(FileSystem.Current);
         builder.Services.AddSingleton<LibraryModelDb>();
+        builder.Services.AddSingleton<WelcomePreferences>();
 
         builder.Services.AddLibrariesGaphqlClient()
             .ConfigureHttpClient(

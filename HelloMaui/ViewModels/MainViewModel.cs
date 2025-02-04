@@ -11,11 +11,11 @@ namespace HelloMaui.ViewModels;
 
 public partial class MainViewModel : ObservableObject
 {
-    public MainViewModel(IDispatcher dispatcher, IMauiLibraries mauiApiServices, LibraryModelDb libraryModelDb,
-        LibrariesGaphqlClient graphqlClient)
+    public MainViewModel(IDispatcher dispatcher, LibraryModelDb libraryModelDb,
+        LibrariesGaphqlClient graphqlClient) //IMauiLibraries mauiApiServices, 
     {
         _dispatcher = dispatcher;
-        _mauiApiServices = mauiApiServices;
+        // _mauiApiServices = mauiApiServices;
         _libraryModelDb = libraryModelDb;
         _graphqlClient = new MauiLibraryGarphQlService(graphqlClient);
         MauiLibraries = [];
@@ -27,8 +27,10 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty] private bool _isSearchBarEnabled;
     [ObservableProperty] private bool _isRefreshing;
     [ObservableProperty] private object? _selectedLibraryItem;
+
     private readonly IDispatcher _dispatcher;
-    private readonly IMauiLibraries _mauiApiServices;
+
+    // private readonly IMauiLibraries _mauiApiServices;
     private readonly LibraryModelDb _libraryModelDb;
     private readonly MauiLibraryGarphQlService _graphqlClient;
 

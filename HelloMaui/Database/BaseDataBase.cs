@@ -8,7 +8,7 @@ public abstract class BaseDataBase
 {
     private readonly Lazy<SQLiteAsyncConnection> _databaseHolder;
 
-    protected BaseDataBase(IFileSystem fileSystem)
+    protected BaseDataBase(IFileSystem fileSystem)  
     {
         var dbPath = Path.Combine(fileSystem.AppDataDirectory, "database.db3");
         _databaseHolder = new Lazy<SQLiteAsyncConnection>(() => new SQLiteAsyncConnection(dbPath,

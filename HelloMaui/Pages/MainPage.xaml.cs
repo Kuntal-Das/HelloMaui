@@ -6,24 +6,19 @@ using System.Text;
 using System.Threading.Tasks;
 using CommunityToolkit.Maui.Views;
 using HelloMaui.Models;
+using HelloMaui.Services;
 using HelloMaui.ViewModels;
 
 namespace HelloMaui.Pages;
 
 public partial class MainPage : BaseContentPage<MainViewModel>
 {
-    private readonly IPreferences _preferences;
+    private readonly WelcomePreferences _welcomePreferences;
 
-    public MainPage(MainViewModel mainViewModel, IPreferences preferences) : base(mainViewModel)
+    public MainPage(MainViewModel mainViewModel, WelcomePreferences welcomePreferences) : base(mainViewModel)
     {
         InitializeComponent();
-        _preferences = preferences;
-    }
-
-    public bool IsFirstRun
-    {
-        get => _preferences.Get(nameof(IsFirstRun), true);
-        set => _preferences.Set(nameof(IsFirstRun), value);
+        _welcomePreferences = welcomePreferences;
     }
 
     protected override void OnAppearing()
@@ -36,10 +31,10 @@ public partial class MainPage : BaseContentPage<MainViewModel>
             main_rv.IsRefreshing = true;
         }
 
-        if (IsFirstRun)
+        if (_welcomePreferences.IsFirstRun)
         {
             this.ShowPopup(new WelcomePopUp());
-            IsFirstRun = false;
+            _welcomePreferences.IsFirstRun = false;
         }
     }
 }
